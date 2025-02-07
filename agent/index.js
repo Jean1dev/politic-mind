@@ -1,7 +1,7 @@
 // import * as dotenv from "dotenv";
 // dotenv.config();
 
-import { createAgent } from "./in-memory/agent.js";
+import { createAgentWithDocumentsEmbedding } from "./in-memory/agent.js";
 
 // import { searchInVectorStore } from "./redis-vector-store.js";
 
@@ -30,7 +30,7 @@ import { createAgent } from "./in-memory/agent.js";
 // }).finally(() => process.exit(0))
 
 async function test() {
-    const agent = await createAgent()
+    const agent = await createAgentWithDocumentsEmbedding()
     const resposta = await agent.call({
         question: "Me informacoes sobre o parlamentar ARNALDO CALIL PEREIRA JARDIM",
         chat_history: []
