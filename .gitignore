@@ -52,3 +52,6 @@ bower_components/
 .stylelintcache
 
 result.json
+big-query/big-query-access.json
+*.csv
+relacao-candidatos-x-despesas.json
