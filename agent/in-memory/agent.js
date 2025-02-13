@@ -11,7 +11,7 @@ import { createDocuments } from "../vector-store/enrichment-data-store.js";
 dotenv.config();
 
 export async function createAgentJsonLoader() {
-    const loader = new JSONLoader(path.resolve('..', 'data', "result.json"));
+    const loader = new JSONLoader(path.resolve('..', 'data', "resultado-scrap-politic-data.json"));
     const documents = await loader.load();
 
     const embeddings = new OpenAIEmbeddings({

@@ -51,4 +51,7 @@ bower_components/
 # Optional stylelint cache
 .stylelintcache
 
-result.json
+resultado-scrap-politic-data.json
+big-query/big-query-access.json
+*.csv
+relacao-candidatos-x-despesas.json
