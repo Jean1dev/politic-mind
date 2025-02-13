@@ -6,7 +6,10 @@ import { ChatOpenAI } from "@langchain/openai";
 import { MemoryVectorStore } from "langchain/vectorstores/memory"
 import { OpenAIEmbeddings } from "@langchain/openai";
 import path from 'path'
-import { createDocuments } from "../vector-store/enrichment-data-store.js";
+import { 
+    createDocumentsAboutScrapPolitcData,
+    createDocumentsAboutDespesasEleicoes2024
+} from "../vector-store/enrichment-data-store.js";
 
 dotenv.config();
 
@@ -31,7 +34,13 @@ export async function createAgentJsonLoader() {
 }
 
 export async function createAgentWithDocumentsEmbedding() {
-    const documents = createDocuments()
+    const scrapPoliticosDocument = createDocumentsAboutScrapPolitcData()
+    const despesasDocument = createDocumentsAboutDespesasEleicoes2024()
+    const documents = [
+        ...scrapPoliticosDocument,
+        ...despesasDocument
+    ];
+
     const embeddings = new OpenAIEmbeddings({
         modelName: "text-embedding-3-large"
     });

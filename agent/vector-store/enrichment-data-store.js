@@ -1,6 +1,26 @@
 import path from 'path'
 import fs from 'fs'
 
+const formatDespesasEleicoes = (despesaCandidato) => ({
+    pageContent: `
+      Nome: ${despesaCandidato.nome}
+      Título Eleitoral: ${despesaCandidato.titulo_eleitoral}
+      CPF: ${despesaCandidato.cpf}
+      Quantidade de Despesas: ${despesaCandidato.quantidade_despesas}
+      Total de Despesas: R$ ${despesaCandidato.total.toFixed(2)}
+      
+      📌 Descrição das Despesas:
+      ${despesaCandidato.descricao_despesas.map(despesa => `- ${despesa}`).join('\n')}
+    `.trim(),
+    metadata: {
+        nome: despesaCandidato.nome,
+        titulo_eleitoral: despesaCandidato.titulo_eleitoral,
+        cpf: despesaCandidato.cpf,
+        quantidade_despesas: despesaCandidato.quantidade_despesas,
+        total: despesaCandidato.total
+    }
+})
+
 const formatParlamentarDocument = (parlamentar) => ({
     pageContent: `
       Nome: ${parlamentar.nome} (${parlamentar.nomeAbreviado})
@@ -47,11 +67,20 @@ const formatParlamentarDocument = (parlamentar) => ({
     }
 });
 
-export function createDocuments() {
+export function createDocumentsAboutScrapPolitcData() {
     const parlamentaresJSON = JSON.parse(
-        fs.readFileSync(path.resolve('..', 'data', "result.json"))
+        fs.readFileSync(path.resolve('..', 'data', "resultado-scrap-politic-data.json"))
     )
 
     const documentos = parlamentaresJSON.map(formatParlamentarDocument);
+    return documentos
+}
+
+export function createDocumentsAboutDespesasEleicoes2024() {
+    const parlamentaresJSON = JSON.parse(
+        fs.readFileSync(path.resolve('..', 'big-query', "relacao-candidatos-x-despesas.json"))
+    )
+
+    const documentos = parlamentaresJSON.map(formatDespesasEleicoes);
     return documentos
 }
