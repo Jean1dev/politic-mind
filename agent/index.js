@@ -1,7 +1,7 @@
 import * as dotenv from "dotenv";
 dotenv.config();
 
-import { test as run } from "./vector-store/redis-vector-store.js"
+import { searchSimilar } from "./vector-store/redis-vector-store.js"
 //import { createAgentWithDocumentsEmbedding } from "./in-memory/agent.js";
 
 // import { searchInVectorStore } from "./redis-vector-store.js";
@@ -37,7 +37,7 @@ async function test() {
     //     chat_history: []
     // });
     // console.log(resposta)
-    run()
+    searchSimilar('Qual parlamentar mais gastou na campanha')
 }
 
 test()

@@ -4,7 +4,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "node index.js"
+    "test": "node std-in-agent.js"
   },
   "author": "",
   "license": "ISC",

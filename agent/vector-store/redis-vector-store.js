@@ -7,18 +7,26 @@ const embeddings = new OpenAIEmbeddings({
 });
 
 const client = createClient({
-    url: process.env.REDIS_URL
+    url: process.env.REDIS_URL ?? "redis://localhost:6379",
 });
 
-export const vectorStore = new RedisVectorStore(embeddings, {
+const vectorStore = new RedisVectorStore(embeddings, {
     redisClient: client,
     indexName: "langchainjs-testing",
 });
 
-export const searchInVectorStore = async (query) => {
-    const retriever = vectorStore.asRetriever({
-        k: 2,
-    });
-    const result = await retriever.invoke(query);
-    return result
+//https://js.langchain.com/docs/integrations/vectorstores/redis/
+export async function searchSimilar(query, topK = 2) {
+    if (!client.isOpen) {
+        console.log('conectando no redis')
+        await client.connect();
+    }
+
+    const results = await vectorStore.similaritySearch(query, topK);
+
+    if (results.length > 0) {
+        return results[0].pageContent;  // Retorna a resposta mais relevante
+    } else {
+        return null;
+    }
 }
