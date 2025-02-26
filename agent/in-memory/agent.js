@@ -1,5 +1,4 @@
 import { JSONLoader } from "langchain/document_loaders/fs/json";
-import dotenv from "dotenv";
 
 import { ConversationalRetrievalQAChain } from "langchain/chains";
 import { ChatOpenAI } from "@langchain/openai";
@@ -10,8 +9,6 @@ import {
     createDocumentsAboutScrapPolitcData,
     createDocumentsAboutDespesasEleicoes2024
 } from "../vector-store/enrichment-data-store.js";
-
-dotenv.config();
 
 export async function createAgentJsonLoader() {
     const loader = new JSONLoader(path.resolve('..', 'data', "resultado-scrap-politic-data.json"));

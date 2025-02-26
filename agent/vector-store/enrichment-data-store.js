@@ -1,7 +1,7 @@
 import path from 'path'
 import fs from 'fs'
 
-const formatDespesasEleicoes = (despesaCandidato) => ({
+export const formatDespesasEleicoes = (despesaCandidato) => ({
     pageContent: `
       Nome: ${despesaCandidato.nome}
       Título Eleitoral: ${despesaCandidato.titulo_eleitoral}
@@ -21,7 +21,7 @@ const formatDespesasEleicoes = (despesaCandidato) => ({
     }
 })
 
-const formatParlamentarDocument = (parlamentar) => ({
+export const formatParlamentarDocument = (parlamentar) => ({
     pageContent: `
       Nome: ${parlamentar.nome} (${parlamentar.nomeAbreviado})
       Cargo: ${parlamentar.cargo}
