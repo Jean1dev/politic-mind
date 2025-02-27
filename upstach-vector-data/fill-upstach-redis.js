@@ -26,7 +26,6 @@ const getClient = () => {
     return client;
 };
 
-
 async function addDocuments(vectorStore) {
     const parlamentaresJSON = JSON.parse(
         fs.readFileSync(path.resolve('..', 'big-query', "relacao-candidatos-x-despesas.json"))

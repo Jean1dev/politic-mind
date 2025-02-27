@@ -23,10 +23,5 @@ export async function searchSimilar(query, topK = 2) {
     }
 
     const results = await vectorStore.similaritySearch(query, topK);
-
-    if (results.length > 0) {
-        return results[0].pageContent;  // Retorna a resposta mais relevante
-    } else {
-        return null;
-    }
+    return results.map(res => res.pageContent).join("\n\n"); 
 }
