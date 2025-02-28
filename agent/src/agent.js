@@ -51,6 +51,7 @@ async function getAgentForUser(sessionId) {
         //memory,
     });
 
+
     activeSessions.set(sessionId, executor);
     return executor;
 }
@@ -69,7 +70,7 @@ function createNewSessionMemoryHistory(sessionId) {
     });
 }
 
-async function processUserMessage(sessionId = 'jeanluca', userMessage = 'hi, how can you help me?') {
+async function processUserMessage(sessionId = 'jeanluca', userMessage = 'hi, how can you help me? my name is jean') {
     console.log(`📝 Mensagem recebida de ${sessionId}: ${userMessage}`);
 
     const agent = await getAgentForUser(sessionId);

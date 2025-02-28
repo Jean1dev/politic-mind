@@ -4,7 +4,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "node src/agent.js"
+    "test": "node src/langgraph/api.js"
   },
   "author": "",
   "license": "ISC",
@@ -12,6 +12,8 @@
   "dependencies": {
     "@langchain/community": "^0.3.33",
     "@langchain/core": "^0.3.41",
+    "@langchain/langgraph": "^0.2.50",
+    "@langchain/langgraph-checkpoint": "^0.0.15",
     "@langchain/openai": "^0.4.4",
     "@langchain/redis": "^0.1.0",
     "@upstash/redis": "^1.34.4",
@@ -19,6 +21,7 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "langchain": "^0.3.15",
-    "redis": "^4.7.0"
+    "redis": "^4.7.0",
+    "zod": "^3.24.2"
   }
 }
