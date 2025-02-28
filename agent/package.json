@@ -4,16 +4,17 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "node std-in-agent.js"
+    "test": "node src/agent.js"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@langchain/community": "^0.3.29",
-    "@langchain/core": "^0.3.38",
-    "@langchain/openai": "^0.4.2",
+    "@langchain/community": "^0.3.33",
+    "@langchain/core": "^0.3.41",
+    "@langchain/openai": "^0.4.4",
     "@langchain/redis": "^0.1.0",
+    "@upstash/redis": "^1.34.4",
     "@upstash/vector": "^1.2.0",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
