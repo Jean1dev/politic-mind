@@ -1,0 +1,21 @@
+{
+  "name": "ai-task-scheduler",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "node src/stdin-agent.js"
+  },
+  "dependencies": {
+    "@langchain/core": "^0.3.42",
+    "@langchain/openai": "^0.4.4",
+    "chrono-node": "^2.7.8",
+    "dotenv": "^16.4.7",
+    "langchain": "^0.3.19",
+    "zod": "^3.24.2",
+    "zod-to-json-schema": "^3.24.3"
+  }
+}
