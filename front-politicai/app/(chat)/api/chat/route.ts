@@ -26,6 +26,7 @@ import { updateDocument } from '@/lib/ai/tools/update-document';
 import { requestSuggestions } from '@/lib/ai/tools/request-suggestions';
 import { getWeather } from '@/lib/ai/tools/get-weather';
 import { requestParliamentarians } from '@/lib/ai/tools/request-parliamentarians';
+import { verifyUserRequestLimit } from '@/lib/functions/user-request-limit';
 
 export const maxDuration = 60;
 
@@ -41,6 +42,11 @@ export async function POST(request: Request) {
 
   if (!session || !session.user || !session.user.id) {
     return new Response('Unauthorized', { status: 401 });
+  }
+
+  const userLimitIsOk = await verifyUserRequestLimit(session.user.id)
+  if (!userLimitIsOk) {
+    return new Response('Request limit reached', { status: 400 });
   }
 
   const userMessage = getMostRecentUserMessage(messages);
@@ -71,12 +77,12 @@ export async function POST(request: Request) {
           selectedChatModel === 'chat-model-reasoning'
             ? []
             : [
-                'getWeather',
-                'createDocument',
-                'updateDocument',
-                'requestSuggestions',
-                'requestParliamentarians'
-              ],
+              'getWeather',
+              'createDocument',
+              'updateDocument',
+              'requestSuggestions',
+              'requestParliamentarians'
+            ],
         experimental_transform: smoothStream({ chunking: 'word' }),
         experimental_generateMessageId: generateUUID,
         tools: {

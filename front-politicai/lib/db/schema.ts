@@ -9,6 +9,7 @@ import {
   primaryKey,
   foreignKey,
   boolean,
+  integer
 } from 'drizzle-orm/pg-core';
 import { blockKinds } from '../blocks/server';
 
@@ -114,3 +115,20 @@ export const suggestion = pgTable(
 );
 
 export type Suggestion = InferSelectModel<typeof suggestion>;
+
+export const userLimit = pgTable('UserLimit', {
+  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  iterations: integer('iterations').notNull().default(0),
+  limit: integer('limit').notNull().default(10),
+  isUnlimited: boolean('isUnlimited').notNull().default(false),
+  userId: uuid('userId')
+      .notNull()
+      .references(() => user.id),
+  createdAt: timestamp('createdAt').notNull(),
+},
+  (table) => ({
+    pk: primaryKey({ columns: [table.id] }),
+  })
+);
+
+export type UserLimit = InferSelectModel<typeof userLimit>;

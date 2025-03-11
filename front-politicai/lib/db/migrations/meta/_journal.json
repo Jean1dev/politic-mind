@@ -36,6 +36,13 @@
       "when": 1733945232355,
       "tag": "0004_odd_slayback",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1741701629783,
+      "tag": "0005_early_kitty_pryde",
+      "breakpoints": true
     }
   ]
 }
