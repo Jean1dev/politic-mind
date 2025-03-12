@@ -15,6 +15,8 @@ import {
   type Message,
   message,
   vote,
+  userLimit,
+  type UserLimit
 } from './schema';
 import { BlockKind } from '@/components/block';
 
@@ -25,6 +27,39 @@ import { BlockKind } from '@/components/block';
 // biome-ignore lint: Forbidden non-null assertion.
 const client = postgres(process.env.POSTGRES_URL!);
 const db = drizzle(client);
+
+export async function saveUserLimit(userId: string, iterations: number, limitCount: number = 10) {
+  try {
+    await db.insert(userLimit).values({
+      userId,
+      iterations,
+      limit: limitCount,
+      createdAt: new Date(),
+    });
+  } catch (error) {
+    console.error('Failed to save user limit in database', error);
+    throw error;
+  }
+}
+
+export async function getLastInteraction(userId: string): Promise<UserLimit | null> {
+  try {
+    const result = await db.select()
+      .from(userLimit)
+      .where(eq(userLimit.userId, userId))
+      .orderBy(desc(userLimit.createdAt))
+      .limit(1);
+
+    if (result.length == 1) {
+      return result[0]
+    }
+
+    return null;
+  } catch (error) {
+    console.error('Failed to get user limit from database');
+    throw error;
+  }
+}
 
 export async function getUser(email: string): Promise<Array<User>> {
   try {
