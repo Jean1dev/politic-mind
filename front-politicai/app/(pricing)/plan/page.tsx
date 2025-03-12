@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { Plans } from "@/lib/db/schema";
 import { PlansFooter } from "@/components/plans/footer";
+import { toast } from "sonner";
 
 type PlansResponse = Plans & {
   featured?: boolean;
@@ -28,7 +29,22 @@ export default function PaymentPage() {
   const handleSubscribe = useCallback(async (planName: string, planId: string) => {
     setLoadingStates(prev => ({ ...prev, [planName]: true }));
 
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    try {
+      const response = await fetch('api/plan', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ planId }),
+      });
+
+      const { url, id } = await response.json();
+      window.open(url, '_blank');
+      window.history.back()
+    } catch (error) {
+      console.error('Error subscribing to plan:', error);
+      toast.error('Error subscribing to plan')
+    }
     setLoadingStates(prev => ({ ...prev, [planName]: false }));
   }, [])
 
@@ -110,7 +126,7 @@ export default function PaymentPage() {
           ))}
         </div>
       </div>
-      <PlansFooter/>
+      <PlansFooter />
     </main>
   );
 }
