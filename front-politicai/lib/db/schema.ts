@@ -12,6 +12,7 @@ import {
   integer
 } from 'drizzle-orm/pg-core';
 import { blockKinds } from '../blocks/server';
+import { table } from 'console';
 
 export const user = pgTable('User', {
   id: uuid('id').primaryKey().notNull().defaultRandom(),
@@ -117,13 +118,13 @@ export const suggestion = pgTable(
 export type Suggestion = InferSelectModel<typeof suggestion>;
 
 export const userLimit = pgTable('UserLimit', {
-  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  id: uuid('id').notNull().defaultRandom(),
   iterations: integer('iterations').notNull().default(0),
   limit: integer('limit').notNull().default(10),
   isUnlimited: boolean('isUnlimited').notNull().default(false),
   userId: uuid('userId')
-      .notNull()
-      .references(() => user.id),
+    .notNull()
+    .references(() => user.id),
   createdAt: timestamp('createdAt').notNull(),
 },
   (table) => ({
@@ -132,3 +133,18 @@ export const userLimit = pgTable('UserLimit', {
 );
 
 export type UserLimit = InferSelectModel<typeof userLimit>;
+
+export const plans = pgTable('Plans', {
+  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  planRef: text('planRef').notNull(),
+  active: boolean('active').notNull().default(true),
+  name: text('name').notNull(),
+  description: text('description').notNull(),
+  price: integer('price').notNull()
+},
+  (table) => ({
+    pk: primaryKey({ columns: [table.id] }),
+  })
+);
+
+export type Plans = InferSelectModel<typeof plans>

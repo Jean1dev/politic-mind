@@ -16,7 +16,9 @@ import {
   message,
   vote,
   userLimit,
-  type UserLimit
+  type UserLimit,
+  plans,
+  type Plans
 } from './schema';
 import { BlockKind } from '@/components/block';
 
@@ -377,6 +379,15 @@ export async function updateChatVisiblityById({
     return await db.update(chat).set({ visibility }).where(eq(chat.id, chatId));
   } catch (error) {
     console.error('Failed to update chat visibility in database');
+    throw error;
+  }
+}
+
+export async function getPlans(): Promise<Array<Plans>> {
+  try {
+    return await db.select().from(plans);
+  } catch (error) {
+    console.error('Failed to get plans from database', error);
     throw error;
   }
 }
