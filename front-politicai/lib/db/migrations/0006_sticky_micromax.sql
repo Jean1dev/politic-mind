@@ -9,13 +9,13 @@ CREATE TABLE IF NOT EXISTS "Plans" (
 );
 
 INSERT INTO "Plans" ("planRef", "active", "name", "description", "price") 
-    VALUES ('prod_Rvjw1xg0YAJ8Ye', true, 'Plano Inicial (Cobranca unica)', 'Adiciona mais 50 chamadas para utilizar no mes', 199);
+    VALUES ('prod_RwC7RoAOM1YfqG', true, 'Plano Inicial (Cobranca unica)', 'Adiciona mais 50 chamadas para utilizar no mes', 199);
 
 INSERT INTO "Plans" ("planRef", "active", "name", "description", "price") 
-    VALUES ('prod_RvjwP9WwOX23rA', true, 'Plano Start (Cobranca unica)', 'Adiciona mais 500 chamadas para utilizar no mes', 1099);
+    VALUES ('prod_RwC7v0U239A49T', true, 'Plano Start (Cobranca unica)', 'Adiciona mais 500 chamadas para utilizar no mes', 1099);
 
 INSERT INTO "Plans" ("planRef", "active", "name", "description", "price") 
-    VALUES ('prod_RvjwluWOXhqI8m', true, 'Plano Smart Search (Cobranca unica)', 'Adiciona mais 1500 chamadas para utilizar no mes', 2499);
+    VALUES ('prod_RwC7tLRZo8abjj', true, 'Plano Smart Search (Cobranca unica)', 'Adiciona mais 1500 chamadas para utilizar no mes', 2499);
 
 /* 
     Unfortunately in current drizzle-kit version we can't automatically get name for primary key.

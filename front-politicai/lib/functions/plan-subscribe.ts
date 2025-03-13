@@ -1,8 +1,28 @@
 import { getPlans, saveUserLimit } from "@/lib/db/queries";
 import { Plans } from "@/lib/db/schema";
 
-async function createOneLink() {
-    const apiKey = process.env.API_FINANCE_KEY || 'none'
+const apiKey = process.env.API_FINANCE_KEY || 'none'
+
+async function retrievePriceId(productId: string): Promise<string> {
+    const response = await fetch(
+        `https://caixinha-financeira-9a2031b303cc.herokuapp.com/stripe/products/${productId}`,
+        {
+            headers: {
+                'X-API-KEY': apiKey,
+                'Content-Type': 'application/json'
+            },
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error('Failed to get price id');
+    }
+
+    const data = await response.json();
+    return data.priceId;
+}
+
+async function createOneLink(priceId: string) {
     const response = await fetch('https://caixinha-financeira-9a2031b303cc.herokuapp.com/stripe/payment-link', {
         method: 'POST',
         headers: {
@@ -11,7 +31,7 @@ async function createOneLink() {
         },
         body: JSON.stringify({
             quantity: 1,
-            priceId: 'price_1QtwdmG7OpCiJ6QLVBXrO7fn'
+            priceId
         })
     });
 
@@ -32,7 +52,8 @@ async function subscribeUserToPlan(userId: string, plan: Plans) {
 
     const iteractionsUpgrade = planRefToUpgradeMap[plan.planRef] || 0;
 
-    const oneLink = await createOneLink()
+    const priceId = await retrievePriceId(plan.planRef);
+    const oneLink = await createOneLink(priceId);
     await saveUserLimit(userId, 0, iteractionsUpgrade);
 
     return oneLink

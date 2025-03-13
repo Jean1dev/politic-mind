@@ -4,10 +4,7 @@ const products = [
     {
         name: 'Plano Inicial (Cobranca unica)',
         description: 'Adiciona mais 50 chamadas para utilizar no mes',
-        imagesUrl: [
-            'https://png.pngtree.com/png-clipart/20230921/original/pngtree-handdrawn-plan-icon-for-todo-lists-and-project-planning-vector-png-image_12712465.png'
-        ],
-        price: {
+        priceInput: {
             currency: 'BRL',
             unitAmount: 199
         },
@@ -15,10 +12,7 @@ const products = [
     {
         name: 'Plano Start (Cobranca unica)',
         description: 'Adiciona mais 500 chamadas para utilizar no mes',
-        imagesUrl: [
-            'https://png.pngtree.com/png-clipart/20230921/original/pngtree-handdrawn-plan-icon-for-todo-lists-and-project-planning-vector-png-image_12712465.png'
-        ],
-        price: {
+        priceInput: {
             currency: 'BRL',
             unitAmount: 1099
         },
@@ -26,10 +20,7 @@ const products = [
     {
         name: 'Plano Smart Search (Cobranca unica)',
         description: 'Adiciona mais 1500 chamadas para utilizar no mes',
-        imagesUrl: [
-            'https://png.pngtree.com/png-clipart/20230921/original/pngtree-handdrawn-plan-icon-for-todo-lists-and-project-planning-vector-png-image_12712465.png'
-        ],
-        price: {
+        priceInput: {
             currency: 'BRL',
             unitAmount: 2499
         },
