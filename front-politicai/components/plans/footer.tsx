@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { Lock, ShieldCheck, CreditCard } from "lucide-react";
+import { Lock, ShieldCheck, CreditCard } from 'lucide-react';
 
 export function PlansFooter() {
   return (
@@ -8,23 +8,32 @@ export function PlansFooter() {
       <div className="max-w-7xl mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
           <div className="flex flex-col items-center">
-            <Lock className="w-8 h-8 mb-4 text-green-400" />
+            <Lock className="size-8 mb-4 text-green-400" />
             <h3 className="text-lg font-semibold mb-2">Secure Transactions</h3>
-            <p className="text-gray-400">256-bit SSL encryption for maximum security</p>
+            <p className="text-gray-400">
+              256-bit SSL encryption for maximum security
+            </p>
           </div>
           <div className="flex flex-col items-center">
-            <ShieldCheck className="w-8 h-8 mb-4 text-green-400" />
+            <ShieldCheck className="size-8 mb-4 text-green-400" />
             <h3 className="text-lg font-semibold mb-2">Protected Payments</h3>
-            <p className="text-gray-400">Your payment information is always safe</p>
+            <p className="text-gray-400">
+              Your payment information is always safe
+            </p>
           </div>
           <div className="flex flex-col items-center">
-            <CreditCard className="w-8 h-8 mb-4 text-green-400" />
+            <CreditCard className="size-8 mb-4 text-green-400" />
             <h3 className="text-lg font-semibold mb-2">Trusted Platform</h3>
-            <p className="text-gray-400">PCI DSS compliant payment processing</p>
+            <p className="text-gray-400">
+              PCI DSS compliant payment processing
+            </p>
           </div>
         </div>
         <div className="mt-12 pt-8 border-t border-gray-800 text-center text-gray-400">
-          <p>© {new Date().getFullYear()} All rights reserved. Secured by industry-leading encryption.</p>
+          <p>
+            © {new Date().getFullYear()} All rights reserved. Secured by
+            industry-leading encryption.
+          </p>
         </div>
       </div>
     </footer>

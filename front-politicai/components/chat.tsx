@@ -12,7 +12,7 @@ import { fetcher, generateUUID } from '@/lib/utils';
 import { Block } from './block';
 import { MultimodalInput } from './multimodal-input';
 import { Messages } from './messages';
-import { VisibilityType } from './visibility-selector';
+import type { VisibilityType } from './visibility-selector';
 import { useBlockSelector } from '@/hooks/use-block';
 import { toast } from 'sonner';
 
@@ -57,7 +57,7 @@ export function Chat({
         setTimeout(() => {
           window.location.href = '/plan';
         }, 1000);
-      } 
+      }
     },
   });
 

@@ -15,7 +15,9 @@ export const authConfig = {
       const isOnChat = nextUrl.pathname.startsWith('/');
       const isOnRegister = nextUrl.pathname.startsWith('/register');
       const isOnLogin = nextUrl.pathname.startsWith('/login');
-      const isConfirmationWebhook = nextUrl.pathname.startsWith('/api/plan/confirmation');
+      const isConfirmationWebhook = nextUrl.pathname.startsWith(
+        '/api/plan/confirmation',
+      );
 
       if (isConfirmationWebhook) return true;
 

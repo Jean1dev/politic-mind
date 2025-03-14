@@ -20,9 +20,9 @@ import {
   plans,
   type Plans,
   subscribePlanUsers,
-  SubscriblePlanUsers
+  type SubscriblePlanUsers,
 } from './schema';
-import { BlockKind } from '@/components/block';
+import type { BlockKind } from '@/components/block';
 
 // Optionally, if not using email/pass login, you can
 // use the Drizzle adapter for Auth.js / NextAuth
@@ -32,7 +32,11 @@ import { BlockKind } from '@/components/block';
 const client = postgres(process.env.POSTGRES_URL!);
 const db = drizzle(client);
 
-export async function saveUserLimit(userId: string, iterations: number, limitCount: number = 10) {
+export async function saveUserLimit(
+  userId: string,
+  iterations: number,
+  limitCount = 10,
+) {
   try {
     await db.insert(userLimit).values({
       userId,
@@ -46,16 +50,19 @@ export async function saveUserLimit(userId: string, iterations: number, limitCou
   }
 }
 
-export async function getLastInteraction(userId: string): Promise<UserLimit | null> {
+export async function getLastInteraction(
+  userId: string,
+): Promise<UserLimit | null> {
   try {
-    const result = await db.select()
+    const result = await db
+      .select()
       .from(userLimit)
       .where(eq(userLimit.userId, userId))
       .orderBy(desc(userLimit.createdAt))
       .limit(1);
 
-    if (result.length == 1) {
-      return result[0]
+    if (result.length === 1) {
+      return result[0];
     }
 
     return null;
@@ -409,7 +416,7 @@ export async function createSubscribePlan(planId: string, userId: string) {
     await db.insert(subscribePlanUsers).values({
       planId,
       userId,
-      createdAt: new Date()
+      createdAt: new Date(),
     });
   } catch (error) {
     console.error('Failed to save user subscribePlanUsers', error);
@@ -417,11 +424,19 @@ export async function createSubscribePlan(planId: string, userId: string) {
   }
 }
 
-export async function getPendingPlanForUser(userId: string): Promise<SubscriblePlanUsers> {
+export async function getPendingPlanForUser(
+  userId: string,
+): Promise<SubscriblePlanUsers> {
   try {
-    const data = await db.select()
+    const data = await db
+      .select()
       .from(subscribePlanUsers)
-      .where(and(eq(subscribePlanUsers.userId, userId), eq(subscribePlanUsers.pending, true)))
+      .where(
+        and(
+          eq(subscribePlanUsers.userId, userId),
+          eq(subscribePlanUsers.pending, true),
+        ),
+      )
       .orderBy(desc(subscribePlanUsers.createdAt))
       .limit(1);
 
@@ -434,11 +449,15 @@ export async function getPendingPlanForUser(userId: string): Promise<SubscribleP
 
 export async function updateSubscribePlanToPayed(id: string) {
   try {
-    await db.update(subscribePlanUsers)
+    await db
+      .update(subscribePlanUsers)
       .set({ pending: false, payedAt: new Date() })
       .where(eq(subscribePlanUsers.id, id));
   } catch (error) {
-    console.error('Failed to update subscribe plan to payed in database', error);
+    console.error(
+      'Failed to update subscribe plan to payed in database',
+      error,
+    );
     throw error;
   }
 }
