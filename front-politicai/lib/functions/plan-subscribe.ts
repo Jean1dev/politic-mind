@@ -1,7 +1,8 @@
-import { getPlans, saveUserLimit } from "@/lib/db/queries";
+import { createSubscribePlan, getPlans } from "@/lib/db/queries";
 import { Plans } from "@/lib/db/schema";
 
 const apiKey = process.env.API_FINANCE_KEY || 'none'
+const clientId = process.env.API_FINANCE_CLIENT_ID || 'none'
 
 async function retrievePriceId(productId: string): Promise<string> {
     const response = await fetch(
@@ -19,19 +20,21 @@ async function retrievePriceId(productId: string): Promise<string> {
     }
 
     const data = await response.json();
-    return data.priceId;
+    return data.associatedPrice;
 }
 
-async function createOneLink(priceId: string) {
+async function createOneLink(priceId: string, userId: string) {
     const response = await fetch('https://caixinha-financeira-9a2031b303cc.herokuapp.com/stripe/payment-link', {
         method: 'POST',
         headers: {
             'X-API-KEY': apiKey,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'client-id': clientId
         },
         body: JSON.stringify({
             quantity: 1,
-            priceId
+            priceId,
+            externalReferenceId: userId
         })
     });
 
@@ -44,17 +47,9 @@ async function createOneLink(priceId: string) {
 }
 
 async function subscribeUserToPlan(userId: string, plan: Plans) {
-    const planRefToUpgradeMap: { [key: string]: number } = {
-        'prod_Rvjw1xg0YAJ8Ye': 50,
-        'prod_RvjwP9WwOX23rA': 500,
-        'prod_RvjwluWOXhqI8m': 1500,
-    };
-
-    const iteractionsUpgrade = planRefToUpgradeMap[plan.planRef] || 0;
-
     const priceId = await retrievePriceId(plan.planRef);
-    const oneLink = await createOneLink(priceId);
-    await saveUserLimit(userId, 0, iteractionsUpgrade);
+    const oneLink = await createOneLink(priceId, userId);
+    await createSubscribePlan(plan.id, userId);
 
     return oneLink
 }

@@ -135,7 +135,7 @@ export const userLimit = pgTable('UserLimit', {
 export type UserLimit = InferSelectModel<typeof userLimit>;
 
 export const plans = pgTable('Plans', {
-  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  id: uuid('id').notNull().defaultRandom(),
   planRef: text('planRef').notNull(),
   active: boolean('active').notNull().default(true),
   name: text('name').notNull(),
@@ -148,3 +148,26 @@ export const plans = pgTable('Plans', {
 );
 
 export type Plans = InferSelectModel<typeof plans>
+
+export const subscribePlanUsers = pgTable('SubscriblePlanUsers', {
+  id: uuid('id').notNull().defaultRandom(),
+  pending: boolean('pending').notNull().default(true),
+  planId: uuid('planId')
+    .notNull()
+    .references(() => plans.id),
+  userId: uuid('userId')
+    .notNull()
+    .references(() => user.id),
+  createdAt: timestamp('createdAt').notNull(),
+  payedAt: timestamp('payedAt'),
+},
+  (table) => ({
+    pk: primaryKey({ columns: [table.id] }),
+    planRef: foreignKey({
+      columns: [table.planId],
+      foreignColumns: [plans.id],
+    }),
+  })
+);
+
+export type SubscriblePlanUsers = InferSelectModel<typeof subscribePlanUsers>;

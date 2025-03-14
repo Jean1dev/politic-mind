@@ -18,7 +18,9 @@ import {
   userLimit,
   type UserLimit,
   plans,
-  type Plans
+  type Plans,
+  subscribePlanUsers,
+  SubscriblePlanUsers
 } from './schema';
 import { BlockKind } from '@/components/block';
 
@@ -68,6 +70,16 @@ export async function getUser(email: string): Promise<Array<User>> {
     return await db.select().from(user).where(eq(user.email, email));
   } catch (error) {
     console.error('Failed to get user from database');
+    throw error;
+  }
+}
+
+export async function getUserById(id: string): Promise<User> {
+  try {
+    const data = await db.select().from(user).where(eq(user.id, id));
+    return data[0];
+  } catch (error) {
+    console.error('Failed to get user by id from database');
     throw error;
   }
 }
@@ -388,6 +400,45 @@ export async function getPlans(): Promise<Array<Plans>> {
     return await db.select().from(plans);
   } catch (error) {
     console.error('Failed to get plans from database', error);
+    throw error;
+  }
+}
+
+export async function createSubscribePlan(planId: string, userId: string) {
+  try {
+    await db.insert(subscribePlanUsers).values({
+      planId,
+      userId,
+      createdAt: new Date()
+    });
+  } catch (error) {
+    console.error('Failed to save user subscribePlanUsers', error);
+    throw error;
+  }
+}
+
+export async function getPendingPlanForUser(userId: string): Promise<SubscriblePlanUsers> {
+  try {
+    const data = await db.select()
+      .from(subscribePlanUsers)
+      .where(and(eq(subscribePlanUsers.userId, userId), eq(subscribePlanUsers.pending, true)))
+      .orderBy(desc(subscribePlanUsers.createdAt))
+      .limit(1);
+
+    return data[0];
+  } catch (error) {
+    console.error('Failed to get subscribed plans from database', error);
+    throw error;
+  }
+}
+
+export async function updateSubscribePlanToPayed(id: string) {
+  try {
+    await db.update(subscribePlanUsers)
+      .set({ pending: false, payedAt: new Date() })
+      .where(eq(subscribePlanUsers.id, id));
+  } catch (error) {
+    console.error('Failed to update subscribe plan to payed in database', error);
     throw error;
   }
 }

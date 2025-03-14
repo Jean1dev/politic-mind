@@ -12,7 +12,7 @@ function remapResponse(plans: Plans[]) {
                 name: i.name,
                 description: i.description,
                 price: i.price / 100,
-                featured: i.planRef === 'prod_RvjwP9WwOX23rA',
+                featured: i.planRef === 'prod_RwC7v0U239A49T',
                 fullWidth: false
             }))
     )

@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, SetStateAction } from "react";
 import { cn } from "@/lib/utils";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { Plans } from "@/lib/db/schema";
 import { PlansFooter } from "@/components/plans/footer";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { fetchPlans, subcribeAction } from "../actions";
 
 type PlansResponse = Plans & {
   featured?: boolean;
@@ -13,45 +15,33 @@ type PlansResponse = Plans & {
 };
 
 export default function PaymentPage() {
+  const router = useRouter();
   const [plans, setPlans] = useState<PlansResponse[]>([]);
   const [billingType, setBillingType] = useState<"Cartao de credito" | "Pix">("Cartao de credito");
   const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
-    async function fetchPlans() {
-      const response = await fetch('api/plan');
-      const data = await response.json();
-      setPlans(data);
-    }
-    fetchPlans();
+    fetchPlans((data: SetStateAction<PlansResponse[]>) => setPlans(data));
   }, []);
 
   const handleSubscribe = useCallback(async (planName: string, planId: string) => {
     setLoadingStates(prev => ({ ...prev, [planName]: true }));
 
     try {
-      const response = await fetch('api/plan', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ planId }),
-      });
-
-      const { url, id } = await response.json();
+      const url = await subcribeAction(planId);
       window.open(url, '_blank');
-      window.history.back()
+      router.push(`/success?plan=${planName}&type=${billingType}`);
     } catch (error) {
       console.error('Error subscribing to plan:', error);
       toast.error('Error subscribing to plan')
     }
     setLoadingStates(prev => ({ ...prev, [planName]: false }));
-  }, [])
+  }, [billingType])
 
   return (
     <main className="min-h-screen bg-black text-white py-16 px-4 relative">
       <button
-        onClick={() => window.history.back()}
+        onClick={() => window.location.href = '/'}
         className="absolute top-8 left-8 flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
       >
         <ArrowLeft className="w-5 h-5" />
