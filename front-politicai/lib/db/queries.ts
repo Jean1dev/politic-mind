@@ -16,9 +16,13 @@ import {
   message,
   vote,
   userLimit,
-  type UserLimit
+  type UserLimit,
+  plans,
+  type Plans,
+  subscribePlanUsers,
+  type SubscriblePlanUsers,
 } from './schema';
-import { BlockKind } from '@/components/block';
+import type { BlockKind } from '@/components/block';
 
 // Optionally, if not using email/pass login, you can
 // use the Drizzle adapter for Auth.js / NextAuth
@@ -28,7 +32,11 @@ import { BlockKind } from '@/components/block';
 const client = postgres(process.env.POSTGRES_URL!);
 const db = drizzle(client);
 
-export async function saveUserLimit(userId: string, iterations: number, limitCount: number = 10) {
+export async function saveUserLimit(
+  userId: string,
+  iterations: number,
+  limitCount = 10,
+) {
   try {
     await db.insert(userLimit).values({
       userId,
@@ -42,16 +50,19 @@ export async function saveUserLimit(userId: string, iterations: number, limitCou
   }
 }
 
-export async function getLastInteraction(userId: string): Promise<UserLimit | null> {
+export async function getLastInteraction(
+  userId: string,
+): Promise<UserLimit | null> {
   try {
-    const result = await db.select()
+    const result = await db
+      .select()
       .from(userLimit)
       .where(eq(userLimit.userId, userId))
       .orderBy(desc(userLimit.createdAt))
       .limit(1);
 
-    if (result.length == 1) {
-      return result[0]
+    if (result.length === 1) {
+      return result[0];
     }
 
     return null;
@@ -66,6 +77,16 @@ export async function getUser(email: string): Promise<Array<User>> {
     return await db.select().from(user).where(eq(user.email, email));
   } catch (error) {
     console.error('Failed to get user from database');
+    throw error;
+  }
+}
+
+export async function getUserById(id: string): Promise<User> {
+  try {
+    const data = await db.select().from(user).where(eq(user.id, id));
+    return data[0];
+  } catch (error) {
+    console.error('Failed to get user by id from database');
     throw error;
   }
 }
@@ -377,6 +398,66 @@ export async function updateChatVisiblityById({
     return await db.update(chat).set({ visibility }).where(eq(chat.id, chatId));
   } catch (error) {
     console.error('Failed to update chat visibility in database');
+    throw error;
+  }
+}
+
+export async function getPlans(): Promise<Array<Plans>> {
+  try {
+    return await db.select().from(plans);
+  } catch (error) {
+    console.error('Failed to get plans from database', error);
+    throw error;
+  }
+}
+
+export async function createSubscribePlan(planId: string, userId: string) {
+  try {
+    await db.insert(subscribePlanUsers).values({
+      planId,
+      userId,
+      createdAt: new Date(),
+    });
+  } catch (error) {
+    console.error('Failed to save user subscribePlanUsers', error);
+    throw error;
+  }
+}
+
+export async function getPendingPlanForUser(
+  userId: string,
+): Promise<SubscriblePlanUsers> {
+  try {
+    const data = await db
+      .select()
+      .from(subscribePlanUsers)
+      .where(
+        and(
+          eq(subscribePlanUsers.userId, userId),
+          eq(subscribePlanUsers.pending, true),
+        ),
+      )
+      .orderBy(desc(subscribePlanUsers.createdAt))
+      .limit(1);
+
+    return data[0];
+  } catch (error) {
+    console.error('Failed to get subscribed plans from database', error);
+    throw error;
+  }
+}
+
+export async function updateSubscribePlanToPayed(id: string) {
+  try {
+    await db
+      .update(subscribePlanUsers)
+      .set({ pending: false, payedAt: new Date() })
+      .where(eq(subscribePlanUsers.id, id));
+  } catch (error) {
+    console.error(
+      'Failed to update subscribe plan to payed in database',
+      error,
+    );
     throw error;
   }
 }

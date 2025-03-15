@@ -44,7 +44,7 @@ export async function POST(request: Request) {
     return new Response('Unauthorized', { status: 401 });
   }
 
-  const userLimitIsOk = await verifyUserRequestLimit(session.user.id)
+  const userLimitIsOk = await verifyUserRequestLimit(session.user.id);
   if (!userLimitIsOk) {
     return new Response('Request limit reached', { status: 400 });
   }
@@ -77,12 +77,12 @@ export async function POST(request: Request) {
           selectedChatModel === 'chat-model-reasoning'
             ? []
             : [
-              'getWeather',
-              'createDocument',
-              'updateDocument',
-              'requestSuggestions',
-              'requestParliamentarians'
-            ],
+                'getWeather',
+                'createDocument',
+                'updateDocument',
+                'requestSuggestions',
+                'requestParliamentarians',
+              ],
         experimental_transform: smoothStream({ chunking: 'word' }),
         experimental_generateMessageId: generateUUID,
         tools: {
