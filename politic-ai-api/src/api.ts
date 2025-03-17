@@ -16,7 +16,7 @@ fastify.post('/similarity-search', async (request: any, reply) => {
 });
 
 export const start = () => {
-    fastify.listen({ port })
+    fastify.listen({ port, host: '0.0.0.0' })
         .catch(err => {
             fastify.log.error(err);
             process.exit(1);
