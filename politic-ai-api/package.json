@@ -9,6 +9,9 @@
   "scripts": {
     "start": "node --experimental-transform-types --env-file=.env index.ts"
   },
+  "engines": {
+    "node": ">=23.1.0"
+  },
   "dependencies": {
     "@langchain/community": "^0.3.35",
     "@langchain/openai": "^0.4.4",

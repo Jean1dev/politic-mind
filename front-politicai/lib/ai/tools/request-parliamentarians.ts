@@ -12,7 +12,7 @@ export const requestParliamentarians = tool({
     question: z.string(),
   }),
   execute: async ({ question }) => {
-    const response = await fetch(`http://localhost:8081/similarity-search`, {
+    const response = await fetch(`https://similarity-search-api-dc504ca1e6e3.herokuapp.com/similarity-search`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
