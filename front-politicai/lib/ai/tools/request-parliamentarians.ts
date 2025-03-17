@@ -1,6 +1,10 @@
 import { tool } from 'ai';
 import { z } from 'zod';
 
+function format(similarity: any[]) {
+  return similarity.map(i => i.pageContent).join('\n\n');
+}
+
 export const requestParliamentarians = tool({
   description:
     'Search for information about politicians, senators and deputies',
@@ -8,15 +12,20 @@ export const requestParliamentarians = tool({
     question: z.string(),
   }),
   execute: async ({ question }) => {
-    const response = await fetch(`http://localhost:8081/message`, {
+    const response = await fetch(`https://similarity-search-api-dc504ca1e6e3.herokuapp.com/similarity-search`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ message: question }),
+      body: JSON.stringify({
+        query: question,
+        k: 2
+      }),
     });
 
     const resultJson = await response.json();
-    return resultJson.received;
+    return {
+      content: `Essas foram as informacoes que eu encontrei ${format(resultJson.similarity)}`
+    }
   },
 });
