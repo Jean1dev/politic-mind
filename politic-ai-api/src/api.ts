@@ -2,7 +2,7 @@ import Fastify from 'fastify'
 import { similaritySearch } from './lib/upstach.ts';
 
 const fastify = Fastify({ logger: true });
-const port = Number(process.env.PORT) || 8081;
+const port = process.env.PORT || 8081;
 
 fastify.post('/similarity-search', async (request: any, reply) => {
     try {
