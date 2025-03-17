@@ -10,6 +10,7 @@ fastify.post('/similarity-search', async (request: any, reply) => {
         const result = await similaritySearch(query, k);
         reply.send({ similarity: result });
     } catch (error) {
+        fastify.log.error(error);
         reply.status(500).send({ error: 'An error occurred while processing your request.' });
     }
 });
