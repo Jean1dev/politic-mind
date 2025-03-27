@@ -11,35 +11,16 @@ function removeDomainFromEmail(email: string): string {
   return email.substring(0, atIndex);
 }
 
-function buildMessageByPaymentType(payment: ResultPaymentApi, name: string): string {
-  const baseMessage = `
+function buildMessageByPaymentType(name: string): string {
+  return `
     Olá ${name},
 
     Obrigado por escolher nossos serviços. Para concluir sua assinatura, por favor, utilize as informações abaixo para realizar o pagamento:
 
-  `;
-
-  if (payment.pixCopiaECola) {
-    return `
-      ${baseMessage}
-      Pix Copia e Cola: ${payment.pixCopiaECola}
-      Chave Pix: ${payment.chave}
-
-      Se você tiver alguma dúvida ou precisar de assistência, não hesite em nos contatar.
+    Se você tiver alguma dúvida ou precisar de assistência, não hesite em nos contatar.
 
       Atenciosamente,
       Equipe Politicai
-    `;
-  }
-
-  return `
-    ${baseMessage}
-    Link de Pagamento: ${payment.linkPayment}
-
-    Se você tiver alguma dúvida ou precisar de assistência, não hesite em nos contatar.
-
-    Atenciosamente,
-    Equipe Politicai
   `;
 }
 
@@ -66,7 +47,10 @@ export async function POST(request: Request) {
   await sendEmail({
     to: user[0].email,
     subject: 'Assinatura Pendente',
-    message: buildMessageByPaymentType(paymentNotify, emailWithoutDomain),
+    message: buildMessageByPaymentType(emailWithoutDomain),
+    linkPagamento: paymentNotify.linkPayment,
+    chavePix: paymentNotify.chave,
+    pixCopiaECola: paymentNotify.pixCopiaECola,
   });
 
   return new Response('', {
