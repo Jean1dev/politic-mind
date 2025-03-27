@@ -9,6 +9,8 @@ function SuccessPage() {
   const searchParams = useSearchParams();
   const plan = searchParams.get('plan');
   const type = searchParams.get('type');
+  const chave = searchParams.get('chave');
+  const pixCopiaECola = searchParams.get('pixCopiaECola');
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -47,6 +49,22 @@ function SuccessPage() {
               </div>
             </div>
           </div>
+
+          {chave && (
+            <div className="bg-gray-900 rounded-2xl p-8 mb-8">
+              <h2 className="text-2xl font-semibold mb-4">Payment Information</h2>
+              <div className="space-y-4 text-left">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400">Key:</span>
+                  <span className="font-semibold">{chave}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400">PIX Copy & Paste:</span>
+                  <span className="font-semibold break-all">{pixCopiaECola}</span>
+                </div>
+              </div>
+            </div>
+          )}
 
           <p className="text-gray-400 mb-8">
             To complete your subscription, please proceed to the payment page.

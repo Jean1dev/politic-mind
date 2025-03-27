@@ -36,14 +36,14 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const { planId } = await request.json();
+  const { planId, billingType } = await request.json();
   const session = await auth();
 
   if (!session || !session.user || !session.user.id) {
     return new Response('Unauthorized', { status: 401 });
   }
-
-  const result = await subscribeOnPlan(session.user.id, planId);
+  
+  const result = await subscribeOnPlan(session.user.id, planId, billingType);
   return new Response(JSON.stringify(result), {
     status: 200,
     headers: {

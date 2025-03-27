@@ -1,6 +1,7 @@
 import { auth } from '@/app/(auth)/auth';
 import { getUser } from '@/lib/db/queries';
 import { sendEmail } from '@/lib/functions/email-utils';
+import { ResultPaymentApi } from '@/lib/functions/plan-subscribe';
 
 function removeDomainFromEmail(email: string): string {
   const atIndex = email.indexOf('@');
@@ -10,16 +11,48 @@ function removeDomainFromEmail(email: string): string {
   return email.substring(0, atIndex);
 }
 
+function buildMessageByPaymentType(payment: ResultPaymentApi, name: string): string {
+  const baseMessage = `
+    Olá ${name},
+
+    Obrigado por escolher nossos serviços. Para concluir sua assinatura, por favor, utilize as informações abaixo para realizar o pagamento:
+
+  `;
+
+  if (payment.pixCopiaECola) {
+    return `
+      ${baseMessage}
+      Pix Copia e Cola: ${payment.pixCopiaECola}
+      Chave Pix: ${payment.chave}
+
+      Se você tiver alguma dúvida ou precisar de assistência, não hesite em nos contatar.
+
+      Atenciosamente,
+      Equipe Politicai
+    `;
+  }
+
+  return `
+    ${baseMessage}
+    Link de Pagamento: ${payment.linkPayment}
+
+    Se você tiver alguma dúvida ou precisar de assistência, não hesite em nos contatar.
+
+    Atenciosamente,
+    Equipe Politicai
+  `;
+}
+
 export async function POST(request: Request) {
-  const { paymentLink } = await request.json();
+  const { paymentNotify }: { paymentNotify: ResultPaymentApi } = await request.json();
   const session = await auth();
 
   if (!session || !session.user || !session.user.id) {
     return new Response('Unauthorized', { status: 401 });
   }
 
-  if (!paymentLink) {
-    return new Response('Payment link is required', { status: 400 });
+  if (!paymentNotify) {
+    return new Response('Body required', { status: 400 });
   }
 
   const user = await getUser(session.user.email || '');
@@ -33,18 +66,7 @@ export async function POST(request: Request) {
   await sendEmail({
     to: user[0].email,
     subject: 'Assinatura Pendente',
-    message: `
-            Olá ${emailWithoutDomain},
-
-            Obrigado por escolher nossos serviços. Para concluir sua assinatura, por favor, clique no link abaixo para realizar o pagamento:
-
-            ${paymentLink}
-
-            Se você tiver alguma dúvida ou precisar de assistência, não hesite em nos contatar.
-
-            Atenciosamente,
-            Equipe Politicai
-        `,
+    message: buildMessageByPaymentType(paymentNotify, emailWithoutDomain),
   });
 
   return new Response('', {
