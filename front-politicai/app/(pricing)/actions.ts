@@ -1,10 +1,12 @@
-async function notify(paymentLink: string) {
+import { ResultPaymentApi } from "@/lib/functions/plan-subscribe";
+
+async function notify(paymentNotify: ResultPaymentApi) {
   await fetch('api/plan/notify', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ paymentLink }),
+    body: JSON.stringify({ paymentNotify }),
   });
 }
 
@@ -14,18 +16,18 @@ export async function fetchPlans(callback: Function) {
   callback(data);
 }
 
-export async function subcribeAction(planId: string) {
+export async function subcribeAction(planId: string, billingType: 'Pix' | 'Cartao de credito') {
   const response = await fetch('api/plan', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ planId }),
+    body: JSON.stringify({ planId, billingType }),
   });
 
-  const { url, id } = await response.json();
+  const resultPayment: ResultPaymentApi = await response.json();
 
-  await notify(url);
+  await notify(resultPayment);
 
-  return url;
+  return resultPayment;
 }

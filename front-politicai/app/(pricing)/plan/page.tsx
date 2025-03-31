@@ -8,6 +8,7 @@ import { PlansFooter } from '@/components/plans/footer';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { fetchPlans, subcribeAction } from '../actions';
+import { wakeUpServices } from '@/lib/functions/wakeup-services';
 
 type PlansResponse = Plans & {
   featured?: boolean;
@@ -20,11 +21,13 @@ export default function PaymentPage() {
   const [billingType, setBillingType] = useState<'Cartao de credito' | 'Pix'>(
     'Cartao de credito',
   );
+
   const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>(
     {},
   );
 
   useEffect(() => {
+    wakeUpServices();
     fetchPlans((data: SetStateAction<PlansResponse[]>) => setPlans(data));
   }, []);
 
@@ -33,9 +36,11 @@ export default function PaymentPage() {
       setLoadingStates((prev) => ({ ...prev, [planName]: true }));
 
       try {
-        const url = await subcribeAction(planId);
-        window.open(url, '_blank');
-        router.push(`/success?plan=${planName}&type=${billingType}`);
+        const result = await subcribeAction(planId, billingType);
+        if (result.linkPayment)
+          window.open(result.linkPayment, '_blank');
+
+        router.push(`/success?plan=${planName}&type=${billingType}&chave=${result.chave}&pixCopiaECola=${result.pixCopiaECola}`);
       } catch (error) {
         console.error('Error subscribing to plan:', error);
         toast.error('Error subscribing to plan');

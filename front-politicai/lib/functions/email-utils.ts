@@ -2,6 +2,9 @@ type EmailInputType = {
   to: string;
   subject: string;
   message: string;
+  chavePix?: string;
+  pixCopiaECola?: string;
+  linkPagamento?: string;
 };
 
 export async function sendEmail(emailInput: EmailInputType): Promise<void> {
@@ -12,7 +15,17 @@ export async function sendEmail(emailInput: EmailInputType): Promise<void> {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(emailInput),
+      body: JSON.stringify({
+        to: emailInput.to,
+        subject: emailInput.subject,
+        message: emailInput.message,
+        templateCode: 2,
+        customBodyProps: {
+          chavePix: emailInput.chavePix,
+          pixCopiaECola: emailInput.pixCopiaECola,
+          linkPagamento: emailInput.linkPagamento,
+        }
+      }),
     },
   );
 
