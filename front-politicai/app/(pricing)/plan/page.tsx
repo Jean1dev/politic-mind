@@ -8,6 +8,7 @@ import { PlansFooter } from '@/components/plans/footer';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { fetchPlans, subcribeAction } from '../actions';
+import { wakeUpServices } from '@/lib/functions/wakeup-services';
 
 type PlansResponse = Plans & {
   featured?: boolean;
@@ -26,6 +27,7 @@ export default function PaymentPage() {
   );
 
   useEffect(() => {
+    wakeUpServices();
     fetchPlans((data: SetStateAction<PlansResponse[]>) => setPlans(data));
   }, []);
 
