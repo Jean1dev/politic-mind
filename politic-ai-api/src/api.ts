@@ -1,8 +1,20 @@
 import Fastify from 'fastify';
 import { similaritySearch } from './lib/upstach.ts';
+import { getTextFromEstrategias, getTextFromGuiaUsoVotext } from './lib/vetex-agent.ts';
 
 const fastify = Fastify({ logger: true });
 const port = parseInt(process.env.PORT || '8081');
+
+fastify.get('/vertex-info', async (request, reply) => {
+    try {
+        const estrategias = await getTextFromEstrategias();
+        const guiaUsoVotext = await getTextFromGuiaUsoVotext();
+        reply.send({ estrategias, guiaUsoVotext });
+    } catch (error) {
+        fastify.log.error(error);
+        reply.status(500).send({ error: 'An error occurred while processing your request.' });
+    }
+});
 
 fastify.post('/similarity-search', async (request: any, reply) => {
     try {
