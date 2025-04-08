@@ -1,11 +1,15 @@
 {
   "compilerOptions": {
-    "target": "ES6",
-    "module": "commonjs",
+    "target": "ESNext",
+    "allowImportingTsExtensions": true,
+    "moduleResolution": "nodenext",
+    "module": "NodeNext",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "types": ["node"],
+    "noEmit": true 
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]
