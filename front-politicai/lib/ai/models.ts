@@ -19,10 +19,7 @@ export const myProvider = customProvider({
     'title-model': openai('gpt-4-turbo'),
     'block-model': openai('gpt-4o-mini'),
   },
-  imageModels: {
-    'small-model': openai.image('dall-e-2'),
-    'large-model': openai.image('dall-e-3'),
-  },
+  // imageModels removido pois openai.image não existe na versão 1.0.7
 });
 
 interface ChatModel {
