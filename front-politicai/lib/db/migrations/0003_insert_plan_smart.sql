@@ -1,0 +1,1 @@
+INSERT INTO `Plans` (`id`, `planRef`, `active`, `name`, `description`, `price`) VALUES ('plan_smart_003', 'prod_RwC7tLRZo8abjj', true, 'Plano Smart Search (Cobranca unica)', 'Adiciona mais 1500 chamadas para utilizar no mes', 2499); 

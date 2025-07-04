@@ -1,0 +1,1 @@
+INSERT INTO `Plans` (`id`, `planRef`, `active`, `name`, `description`, `price`) VALUES ('plan_initial_001', 'prod_RwC7RoAOM1YfqG', true, 'Plano Inicial (Cobranca unica)', 'Adiciona mais 50 chamadas para utilizar no mes', 199); 
