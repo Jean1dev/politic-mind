@@ -1,63 +1,62 @@
 import type { InferSelectModel } from 'drizzle-orm';
 import {
-  pgTable,
+  mysqlTable,
   varchar,
   timestamp,
   json,
-  uuid,
   text,
   primaryKey,
   foreignKey,
   boolean,
-  integer,
-} from 'drizzle-orm/pg-core';
+  int,
+} from 'drizzle-orm/mysql-core';
 
-export const user = pgTable('User', {
-  id: uuid('id').primaryKey().notNull().defaultRandom(),
+export const user = mysqlTable('User', {
+  id: varchar('id', { length: 36 }).primaryKey().notNull(),
   email: varchar('email', { length: 64 }).notNull(),
   password: varchar('password', { length: 64 }),
 });
 
 export type User = InferSelectModel<typeof user>;
 
-export const chat = pgTable('Chat', {
-  id: uuid('id').primaryKey().notNull().defaultRandom(),
+export const chat = mysqlTable('Chat', {
+  id: varchar('id', { length: 36 }).primaryKey().notNull(),
   createdAt: timestamp('createdAt').notNull(),
   title: text('title').notNull(),
-  userId: uuid('userId')
+  userId: varchar('userId', { length: 36 })
     .notNull()
     .references(() => user.id),
-  visibility: varchar('visibility', { enum: ['public', 'private'] })
+  visibility: varchar('visibility', { length: 10, enum: ['public', 'private'] })
     .notNull()
     .default('private'),
 });
 
 export type Chat = InferSelectModel<typeof chat>;
 
-export const message = pgTable('Message', {
-  id: uuid('id').primaryKey().notNull().defaultRandom(),
-  chatId: uuid('chatId')
+export const message = mysqlTable('Message', {
+  id: varchar('id', { length: 36 }).primaryKey().notNull(),
+  chatId: varchar('chatId', { length: 36 })
     .notNull()
     .references(() => chat.id),
-  role: varchar('role').notNull(),
+  role: varchar('role', { length: 20 }).notNull(),
   content: json('content').notNull(),
   createdAt: timestamp('createdAt').notNull(),
 });
 
 export type Message = InferSelectModel<typeof message>;
 
-export const vote = pgTable(
+export const vote = mysqlTable(
   'Vote',
   {
-    chatId: uuid('chatId')
+    chatId: varchar('chatId', { length: 36 })
       .notNull()
       .references(() => chat.id),
-    messageId: uuid('messageId')
+    messageId: varchar('messageId', { length: 36 })
       .notNull()
       .references(() => message.id),
     isUpvoted: boolean('isUpvoted').notNull(),
   },
-  (table) => {
+  (table: any) => {
     return {
       pk: primaryKey({ columns: [table.chatId, table.messageId] }),
     };
@@ -66,21 +65,21 @@ export const vote = pgTable(
 
 export type Vote = InferSelectModel<typeof vote>;
 
-export const document = pgTable(
+export const document = mysqlTable(
   'Document',
   {
-    id: uuid('id').notNull().defaultRandom(),
+    id: varchar('id', { length: 36 }).notNull(),
     createdAt: timestamp('createdAt').notNull(),
     title: text('title').notNull(),
     content: text('content'),
-    kind: varchar('text', { enum: ['text', 'code', 'image', 'sheet'] })
+    kind: varchar('kind', { length: 10, enum: ['text', 'code', 'image', 'sheet'] })
       .notNull()
       .default('text'),
-    userId: uuid('userId')
+    userId: varchar('userId', { length: 36 })
       .notNull()
       .references(() => user.id),
   },
-  (table) => {
+  (table: any) => {
     return {
       pk: primaryKey({ columns: [table.id, table.createdAt] }),
     };
@@ -89,22 +88,22 @@ export const document = pgTable(
 
 export type Document = InferSelectModel<typeof document>;
 
-export const suggestion = pgTable(
+export const suggestion = mysqlTable(
   'Suggestion',
   {
-    id: uuid('id').notNull().defaultRandom(),
-    documentId: uuid('documentId').notNull(),
+    id: varchar('id', { length: 36 }).notNull(),
+    documentId: varchar('documentId', { length: 36 }).notNull(),
     documentCreatedAt: timestamp('documentCreatedAt').notNull(),
     originalText: text('originalText').notNull(),
     suggestedText: text('suggestedText').notNull(),
     description: text('description'),
     isResolved: boolean('isResolved').notNull().default(false),
-    userId: uuid('userId')
+    userId: varchar('userId', { length: 36 })
       .notNull()
       .references(() => user.id),
     createdAt: timestamp('createdAt').notNull(),
   },
-  (table) => ({
+  (table: any) => ({
     pk: primaryKey({ columns: [table.id] }),
     documentRef: foreignKey({
       columns: [table.documentId, table.documentCreatedAt],
@@ -115,57 +114,57 @@ export const suggestion = pgTable(
 
 export type Suggestion = InferSelectModel<typeof suggestion>;
 
-export const userLimit = pgTable(
+export const userLimit = mysqlTable(
   'UserLimit',
   {
-    id: uuid('id').notNull().defaultRandom(),
-    iterations: integer('iterations').notNull().default(0),
-    limit: integer('limit').notNull().default(10),
+    id: varchar('id', { length: 36 }).notNull(),
+    iterations: int('iterations').notNull().default(0),
+    limit: int('limit').notNull().default(10),
     isUnlimited: boolean('isUnlimited').notNull().default(false),
-    userId: uuid('userId')
+    userId: varchar('userId', { length: 36 })
       .notNull()
       .references(() => user.id),
     createdAt: timestamp('createdAt').notNull(),
   },
-  (table) => ({
+  (table: any) => ({
     pk: primaryKey({ columns: [table.id] }),
   }),
 );
 
 export type UserLimit = InferSelectModel<typeof userLimit>;
 
-export const plans = pgTable(
+export const plans = mysqlTable(
   'Plans',
   {
-    id: uuid('id').notNull().defaultRandom(),
+    id: varchar('id', { length: 36 }).notNull(),
     planRef: text('planRef').notNull(),
     active: boolean('active').notNull().default(true),
     name: text('name').notNull(),
     description: text('description').notNull(),
-    price: integer('price').notNull(),
+    price: int('price').notNull(),
   },
-  (table) => ({
+  (table: any) => ({
     pk: primaryKey({ columns: [table.id] }),
   }),
 );
 
 export type Plans = InferSelectModel<typeof plans>;
 
-export const subscribePlanUsers = pgTable(
+export const subscribePlanUsers = mysqlTable(
   'SubscriblePlanUsers',
   {
-    id: uuid('id').notNull().defaultRandom(),
+    id: varchar('id', { length: 36 }).notNull(),
     pending: boolean('pending').notNull().default(true),
-    planId: uuid('planId')
+    planId: varchar('planId', { length: 36 })
       .notNull()
       .references(() => plans.id),
-    userId: uuid('userId')
+    userId: varchar('userId', { length: 36 })
       .notNull()
       .references(() => user.id),
     createdAt: timestamp('createdAt').notNull(),
     payedAt: timestamp('payedAt'),
   },
-  (table) => ({
+  (table: any) => ({
     pk: primaryKey({ columns: [table.id] }),
     planRef: foreignKey({
       columns: [table.planId],

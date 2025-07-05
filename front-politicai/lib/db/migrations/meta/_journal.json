@@ -1,61 +1,33 @@
 {
   "version": "7",
-  "dialect": "postgresql",
+  "dialect": "mysql",
   "entries": [
     {
       "idx": 0,
-      "version": "7",
-      "when": 1728598022383,
-      "tag": "0000_keen_devos",
+      "version": "5",
+      "when": 1751645938626,
+      "tag": "0000_large_namorita",
       "breakpoints": true
     },
     {
       "idx": 1,
-      "version": "7",
-      "when": 1730207363999,
-      "tag": "0001_sparkling_blue_marvel",
+      "version": "5",
+      "when": 1751646000000,
+      "tag": "0001_insert_plans",
       "breakpoints": true
     },
     {
       "idx": 2,
-      "version": "7",
-      "when": 1730725226313,
-      "tag": "0002_wandering_riptide",
+      "version": "5",
+      "when": 1751646100000,
+      "tag": "0002_insert_plan_start",
       "breakpoints": true
     },
     {
       "idx": 3,
-      "version": "7",
-      "when": 1733403031014,
-      "tag": "0003_cloudy_glorian",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1733945232355,
-      "tag": "0004_odd_slayback",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1741701629783,
-      "tag": "0005_early_kitty_pryde",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1741798766891,
-      "tag": "0006_sticky_micromax",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "7",
-      "when": 1741965776889,
-      "tag": "0007_stiff_spacker_dave",
+      "version": "5",
+      "when": 1751646200000,
+      "tag": "0003_insert_plan_smart",
       "breakpoints": true
     }
   ]

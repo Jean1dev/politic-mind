@@ -2,8 +2,9 @@ import 'server-only';
 
 import { genSaltSync, hashSync } from 'bcrypt-ts';
 import { and, asc, desc, eq, gt, gte, inArray } from 'drizzle-orm';
-import { drizzle } from 'drizzle-orm/postgres-js';
-import postgres from 'postgres';
+import { drizzle } from 'drizzle-orm/mysql2';
+import mysql from 'mysql2/promise';
+import { nanoid } from 'nanoid';
 
 import {
   user,
@@ -28,9 +29,16 @@ import type { BlockKind } from '@/components/block';
 // use the Drizzle adapter for Auth.js / NextAuth
 // https://authjs.dev/reference/adapter/drizzle
 
-// biome-ignore lint: Forbidden non-null assertion.
-const client = postgres(process.env.POSTGRES_URL!);
-const db = drizzle(client);
+let db: ReturnType<typeof drizzle>;
+
+function getDb() {
+  if (!db) {
+    // biome-ignore lint: Forbidden non-null assertion.
+    const pool = mysql.createPool(process.env.MYSQL_URL!);
+    db = drizzle(pool);
+  }
+  return db;
+}
 
 export async function saveUserLimit(
   userId: string,
@@ -38,7 +46,8 @@ export async function saveUserLimit(
   limitCount = 10,
 ) {
   try {
-    await db.insert(userLimit).values({
+    await getDb().insert(userLimit).values({
+      id: nanoid(),
       userId,
       iterations,
       limit: limitCount,
@@ -54,7 +63,7 @@ export async function getLastInteraction(
   userId: string,
 ): Promise<UserLimit | null> {
   try {
-    const result = await db
+    const result = await getDb()
       .select()
       .from(userLimit)
       .where(eq(userLimit.userId, userId))
@@ -74,7 +83,7 @@ export async function getLastInteraction(
 
 export async function getUser(email: string): Promise<Array<User>> {
   try {
-    return await db.select().from(user).where(eq(user.email, email));
+    return await getDb().select().from(user).where(eq(user.email, email));
   } catch (error) {
     console.error('Failed to get user from database');
     throw error;
@@ -83,7 +92,7 @@ export async function getUser(email: string): Promise<Array<User>> {
 
 export async function getUserById(id: string): Promise<User> {
   try {
-    const data = await db.select().from(user).where(eq(user.id, id));
+    const data = await getDb().select().from(user).where(eq(user.id, id));
     return data[0];
   } catch (error) {
     console.error('Failed to get user by id from database');
@@ -96,7 +105,11 @@ export async function createUser(email: string, password: string) {
   const hash = hashSync(password, salt);
 
   try {
-    return await db.insert(user).values({ email, password: hash });
+    return await getDb().insert(user).values({ 
+      id: nanoid(),
+      email, 
+      password: hash 
+    });
   } catch (error) {
     console.error('Failed to create user in database');
     throw error;
@@ -113,7 +126,7 @@ export async function saveChat({
   title: string;
 }) {
   try {
-    return await db.insert(chat).values({
+    return await getDb().insert(chat).values({
       id,
       createdAt: new Date(),
       userId,
@@ -127,10 +140,10 @@ export async function saveChat({
 
 export async function deleteChatById({ id }: { id: string }) {
   try {
-    await db.delete(vote).where(eq(vote.chatId, id));
-    await db.delete(message).where(eq(message.chatId, id));
+    await getDb().delete(vote).where(eq(vote.chatId, id));
+    await getDb().delete(message).where(eq(message.chatId, id));
 
-    return await db.delete(chat).where(eq(chat.id, id));
+    return await getDb().delete(chat).where(eq(chat.id, id));
   } catch (error) {
     console.error('Failed to delete chat by id from database');
     throw error;
@@ -139,7 +152,7 @@ export async function deleteChatById({ id }: { id: string }) {
 
 export async function getChatsByUserId({ id }: { id: string }) {
   try {
-    return await db
+    return await getDb()
       .select()
       .from(chat)
       .where(eq(chat.userId, id))
@@ -152,7 +165,7 @@ export async function getChatsByUserId({ id }: { id: string }) {
 
 export async function getChatById({ id }: { id: string }) {
   try {
-    const [selectedChat] = await db.select().from(chat).where(eq(chat.id, id));
+    const [selectedChat] = await getDb().select().from(chat).where(eq(chat.id, id));
     return selectedChat;
   } catch (error) {
     console.error('Failed to get chat by id from database');
@@ -162,7 +175,7 @@ export async function getChatById({ id }: { id: string }) {
 
 export async function saveMessages({ messages }: { messages: Array<Message> }) {
   try {
-    return await db.insert(message).values(messages);
+    return await getDb().insert(message).values(messages);
   } catch (error) {
     console.error('Failed to save messages in database', error);
     throw error;
@@ -171,7 +184,7 @@ export async function saveMessages({ messages }: { messages: Array<Message> }) {
 
 export async function getMessagesByChatId({ id }: { id: string }) {
   try {
-    return await db
+    return await getDb()
       .select()
       .from(message)
       .where(eq(message.chatId, id))
@@ -192,18 +205,18 @@ export async function voteMessage({
   type: 'up' | 'down';
 }) {
   try {
-    const [existingVote] = await db
+    const [existingVote] = await getDb()
       .select()
       .from(vote)
       .where(and(eq(vote.messageId, messageId)));
 
     if (existingVote) {
-      return await db
+      return await getDb()
         .update(vote)
         .set({ isUpvoted: type === 'up' })
         .where(and(eq(vote.messageId, messageId), eq(vote.chatId, chatId)));
     }
-    return await db.insert(vote).values({
+    return await getDb().insert(vote).values({
       chatId,
       messageId,
       isUpvoted: type === 'up',
@@ -216,7 +229,7 @@ export async function voteMessage({
 
 export async function getVotesByChatId({ id }: { id: string }) {
   try {
-    return await db.select().from(vote).where(eq(vote.chatId, id));
+    return await getDb().select().from(vote).where(eq(vote.chatId, id));
   } catch (error) {
     console.error('Failed to get votes by chat id from database', error);
     throw error;
@@ -237,7 +250,7 @@ export async function saveDocument({
   userId: string;
 }) {
   try {
-    return await db.insert(document).values({
+    return await getDb().insert(document).values({
       id,
       title,
       kind,
@@ -253,7 +266,7 @@ export async function saveDocument({
 
 export async function getDocumentsById({ id }: { id: string }) {
   try {
-    const documents = await db
+    const documents = await getDb()
       .select()
       .from(document)
       .where(eq(document.id, id))
@@ -268,7 +281,7 @@ export async function getDocumentsById({ id }: { id: string }) {
 
 export async function getDocumentById({ id }: { id: string }) {
   try {
-    const [selectedDocument] = await db
+    const [selectedDocument] = await getDb()
       .select()
       .from(document)
       .where(eq(document.id, id))
@@ -289,7 +302,7 @@ export async function deleteDocumentsByIdAfterTimestamp({
   timestamp: Date;
 }) {
   try {
-    await db
+    await getDb()
       .delete(suggestion)
       .where(
         and(
@@ -298,7 +311,7 @@ export async function deleteDocumentsByIdAfterTimestamp({
         ),
       );
 
-    return await db
+    return await getDb()
       .delete(document)
       .where(and(eq(document.id, id), gt(document.createdAt, timestamp)));
   } catch (error) {
@@ -315,7 +328,7 @@ export async function saveSuggestions({
   suggestions: Array<Suggestion>;
 }) {
   try {
-    return await db.insert(suggestion).values(suggestions);
+    return await getDb().insert(suggestion).values(suggestions);
   } catch (error) {
     console.error('Failed to save suggestions in database');
     throw error;
@@ -328,7 +341,7 @@ export async function getSuggestionsByDocumentId({
   documentId: string;
 }) {
   try {
-    return await db
+    return await getDb()
       .select()
       .from(suggestion)
       .where(and(eq(suggestion.documentId, documentId)));
@@ -342,7 +355,7 @@ export async function getSuggestionsByDocumentId({
 
 export async function getMessageById({ id }: { id: string }) {
   try {
-    return await db.select().from(message).where(eq(message.id, id));
+    return await getDb().select().from(message).where(eq(message.id, id));
   } catch (error) {
     console.error('Failed to get message by id from database');
     throw error;
@@ -357,7 +370,7 @@ export async function deleteMessagesByChatIdAfterTimestamp({
   timestamp: Date;
 }) {
   try {
-    const messagesToDelete = await db
+    const messagesToDelete = await getDb()
       .select({ id: message.id })
       .from(message)
       .where(
@@ -367,13 +380,13 @@ export async function deleteMessagesByChatIdAfterTimestamp({
     const messageIds = messagesToDelete.map((message) => message.id);
 
     if (messageIds.length > 0) {
-      await db
+      await getDb()
         .delete(vote)
         .where(
           and(eq(vote.chatId, chatId), inArray(vote.messageId, messageIds)),
         );
 
-      return await db
+      return await getDb()
         .delete(message)
         .where(
           and(eq(message.chatId, chatId), inArray(message.id, messageIds)),
@@ -395,7 +408,7 @@ export async function updateChatVisiblityById({
   visibility: 'private' | 'public';
 }) {
   try {
-    return await db.update(chat).set({ visibility }).where(eq(chat.id, chatId));
+    return await getDb().update(chat).set({ visibility }).where(eq(chat.id, chatId));
   } catch (error) {
     console.error('Failed to update chat visibility in database');
     throw error;
@@ -404,7 +417,7 @@ export async function updateChatVisiblityById({
 
 export async function getPlans(): Promise<Array<Plans>> {
   try {
-    return await db.select().from(plans);
+    return await getDb().select().from(plans);
   } catch (error) {
     console.error('Failed to get plans from database', error);
     throw error;
@@ -413,7 +426,8 @@ export async function getPlans(): Promise<Array<Plans>> {
 
 export async function createSubscribePlan(planId: string, userId: string) {
   try {
-    await db.insert(subscribePlanUsers).values({
+    await getDb().insert(subscribePlanUsers).values({
+      id: nanoid(),
       planId,
       userId,
       createdAt: new Date(),
@@ -428,7 +442,7 @@ export async function getPendingPlanForUser(
   userId: string,
 ): Promise<SubscriblePlanUsers> {
   try {
-    const data = await db
+    const data = await getDb()
       .select()
       .from(subscribePlanUsers)
       .where(
@@ -449,7 +463,7 @@ export async function getPendingPlanForUser(
 
 export async function updateSubscribePlanToPayed(id: string) {
   try {
-    await db
+    await getDb()
       .update(subscribePlanUsers)
       .set({ pending: false, payedAt: new Date() })
       .where(eq(subscribePlanUsers.id, id));
