@@ -54,7 +54,10 @@ async function createOneLink(priceId: string, userId: string) {
   }
 
   const data = await response.json();
-  return data;
+  return {
+    linkPayment: data.url,
+    id: data.id,
+  };
 }
 
 async function createPixCob(userId: string, plan: Plans) {
@@ -85,16 +88,11 @@ async function createPixCob(userId: string, plan: Plans) {
     throw new Error('Failed to create pix link');
   }
 
-  const {
-    chave,
-    pixCopiaECola,
-    qrCode
-  } = await response.json();
-
+  const data = await response.json();
   return {
-    chave,
-    pixCopiaECola,
-    qrCode
+    chave: data.chave,
+    pixCopiaECola: data.pixCopiaECola,
+    qrCode: data.qrCode,
   }
 }
 
