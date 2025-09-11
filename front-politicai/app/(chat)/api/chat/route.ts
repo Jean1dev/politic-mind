@@ -28,6 +28,7 @@ import { getWeather } from '@/lib/ai/tools/get-weather';
 import { requestParliamentarians } from '@/lib/ai/tools/request-parliamentarians';
 import { verifyUserRequestLimit } from '@/lib/functions/user-request-limit';
 import { requestTradingStrategies } from '@/lib/ai/tools/vortex-crypto';
+import { analyzeFile } from '@/lib/ai/tools/analyze-file';
 
 export const maxDuration = 60;
 
@@ -84,6 +85,7 @@ export async function POST(request: Request) {
                 'requestSuggestions',
                 'requestParliamentarians',
                 'requestTradingStrategies',
+                'analyzeFile',
               ],
         experimental_transform: smoothStream({ chunking: 'word' }),
         experimental_generateMessageId: generateUUID,
@@ -97,6 +99,7 @@ export async function POST(request: Request) {
             session,
             dataStream,
           }),
+          analyzeFile: analyzeFile({ messages }),
         },
         onFinish: async ({ response, reasoning }) => {
           if (session.user?.id) {
