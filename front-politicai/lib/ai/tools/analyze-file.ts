@@ -8,7 +8,7 @@ interface AnalyzeFileProps {
 
 export const analyzeFile = ({ messages }: AnalyzeFileProps) =>
   tool({
-    description: 'Analyze uploaded files (PNG images or PDF documents) and provide a brief comment about their content. Use this tool when the user asks to analyze, describe, or comment on an attached file. The tool can analyze images (PNG, JPEG) and PDF documents. Always use this tool when there are file attachments and the user is asking about the file content.',
+    description: 'Analyze uploaded files (PNG images or PDF documents) and provide a brief comment about their content. Use this tool when the user asks to analyze, describe, or comment on an attached file. The tool can analyze images (PNG, JPEG) and PDF documents. IMPORTANT: Always use this tool when there are file attachments in the conversation and the user is asking about file content. If the user mentions analyzing a PDF, file, or asks about content of an uploaded document, immediately use this tool to analyze the attached files.',
     parameters: z.object({
       fileIndex: z.number().optional().describe('Index of the file to analyze (0-based). If not provided, analyzes the last available file.'),
     }),
@@ -17,11 +17,16 @@ export const analyzeFile = ({ messages }: AnalyzeFileProps) =>
         const allUserMessages = messages.filter(msg => msg.role === 'user');
         const allAttachments = allUserMessages.flatMap(msg => msg.experimental_attachments || []);
         
+        console.log('AnalyzeFile tool called with messages:', messages.length);
+        console.log('User messages:', allUserMessages.length);
+        console.log('Total attachments found:', allAttachments.length);
+        console.log('Attachments:', allAttachments.map(a => ({ name: a.name, contentType: a.contentType })));
+        
         if (allAttachments.length === 0) {
           return {
             success: false,
             error: 'No attachments found in any user message',
-            content: 'Nenhum arquivo foi encontrado nas mensagens para análise.'
+            content: 'Nenhum arquivo foi encontrado nas mensagens para análise. Por favor, faça o upload de um arquivo PDF ou imagem primeiro.'
           };
         }
 

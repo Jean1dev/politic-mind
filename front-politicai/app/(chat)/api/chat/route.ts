@@ -68,12 +68,26 @@ export async function POST(request: Request) {
     messages: [{ ...userMessage, createdAt: new Date(), chatId: id }],
   });
 
+  const sanitizedMessages = messages.map(message => {
+    if (message.role === 'user' && message.experimental_attachments) {
+      const hasPdfAttachments = message.experimental_attachments.some(attachment => 
+        attachment.contentType === 'application/pdf'
+      );
+      
+      if (hasPdfAttachments) {
+        const { experimental_attachments, ...messageWithoutAttachments } = message;
+        return messageWithoutAttachments;
+      }
+    }
+    return message;
+  });
+
   return createDataStreamResponse({
     execute: (dataStream) => {
       const result = streamText({
         model: myProvider.languageModel(selectedChatModel),
         system: systemPrompt({ selectedChatModel }),
-        messages,
+        messages: sanitizedMessages,
         maxSteps: 5,
         experimental_activeTools:
           selectedChatModel === 'chat-model-reasoning'
@@ -99,7 +113,7 @@ export async function POST(request: Request) {
             session,
             dataStream,
           }),
-          analyzeFile: analyzeFile({ messages }),
+          analyzeFile: analyzeFile({ messages: messages }),
         },
         onFinish: async ({ response, reasoning }) => {
           if (session.user?.id) {
